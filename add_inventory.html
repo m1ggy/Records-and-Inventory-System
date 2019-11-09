@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+ 
+    <div class="jumbotron">
+        <h1 class="display-5">Update Inventory</h1>
+        <form>
+            <div class="form-group">
+                <label>Name of Item</label>
+                <input type="text" class="form-control" placeholder="Item Name" name="nameItem">
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>             
+                    <input type="text" class="form-control" placeholder="Quantity" name="quantity">
+            </div>
+            <div class="form-group">
+                    <label>Price</label>             
+                        <input type="text" class="form-control" placeholder="Price" name="price">
+                </div>
+                        
+           <button class="btn btn-success text-center" type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+        const form = document.querySelector('form');
+
+        form.addEventListener('submit', e=>{
+            e.preventDefault();
+        let item = form.nameItem.value;
+        let quantity = form.quantity.value;
+        let payment = form.price.value;  
+        let today = new Date();
+        var dateOfToday = `${today.getFullYear()}-${(today.getMonth()+1)}-${today.getDate()}`;
+        var timeOfToday = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+        console.log('im inside');
+        ipcRenderer.send('inventory:addNew', item, quantity, payment,dateOfToday,timeOfToday);
+        })
+    </script>
+</body>
+</html>

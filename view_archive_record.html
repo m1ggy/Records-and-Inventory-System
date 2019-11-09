@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+    
+<div class="jumbotron">
+        <a href="./records.html">Go back</a>
+    <h1>Archived records</h1>
+    <table class="table">
+        <thead class="thead-dark">
+            <th scope="col">#</th>
+            <th scope="col">Name of Employee</th>
+            <th scope="col">Type of Service</th>
+            <th scope="col">Price</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+        </thead>
+        <tbody class="newInput">
+                
+        </tbody>
+    </table>
+    <h3 style="display: none;" id="sadFace" class="text-center">no records :(</h3>
+    </div>
+</div>
+    <script>
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+    const low = require('lowdb');
+    const FileSync = require('lowdb/adapters/FileSync');
+    const adapterArchive = new FileSync('Archive.json');
+    const dbArchive = low(adapterArchive);
+    const noRecord = document.querySelector('#sadFace');
+    const table = document.querySelector('.newInput');
+    if(dbArchive.has('user[0].count').value()==false){
+            noRecord.style.display = "";
+         }
+
+         let number = dbArchive.get('user').size().value(); //getting the size of database
+        let i = 0;
+        console.log(number);
+        //if database is not empty, display all
+        if(number>i){
+            noRecord.style.display = "none";
+            while(number>i){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        const td1 = document.createElement('td');
+        const td2 = document.createElement('td');
+        const td3 = document.createElement('td');
+        const td4 = document.createElement('td');
+        const th = document.createElement('th');        
+
+        let count = document.createTextNode(dbArchive.get(`user[${i}].count`).value());
+        let userName = document.createTextNode(dbArchive.get(`user[${i}].employeeName`).value());
+        let serviceType = document.createTextNode(dbArchive.get(`user[${i}].typeOfService`).value());
+        let price = document.createTextNode(dbArchive.get(`user[${i}].price`).value());
+        let date = document.createTextNode(dbArchive.get(`user[${i}].dateofTransc`).value());      
+        let time = document.createTextNode(dbArchive.get(`user[${i}].timeofTransc`).value());
+
+           th.appendChild(count);
+           tr.appendChild(th);      
+           td.appendChild(userName);
+           tr.appendChild(td);       
+           td1.appendChild(serviceType);
+           tr.appendChild(td1);
+           td2.appendChild(price);
+           tr.appendChild(td2);
+           td3.appendChild(date);
+           tr.appendChild(td3);
+           td4.appendChild(time);
+           tr.appendChild(td4);
+           table.appendChild(tr);
+                i++;
+            }
+        }
+
+    </script>
+</body>
+
+</html>

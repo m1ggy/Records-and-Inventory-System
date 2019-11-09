@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+    <nav class="nav navbar">
+        <a href="home.html" class="nav-item">Back</a>
+    </nav>
+    <div class="jumbotron">
+        <h1>Change Password</h1>
+        <form class="login text-center" style="width: 500px;margin: auto;">
+                <div class="form-group">
+                  <label for="currpass">Enter Current Password</label>
+                  <input type="password" class="form-control" id="currpass" placeholder="current password" required>
+                </div>
+                <div class="form-group">
+                  <label for="newpass">Enter New Password</label>
+                  <input type="password" class="form-control" id="newpass" placeholder="new password" required>
+                </div>
+                <div class="form-group">
+                        <label for="newpassAgain">Enter New Password Again</label>
+                        <input type="password" class="form-control" id="newpassAgain" placeholder="new password" required>
+                      </div>
+                <div>
+                  <p class="text-danger invalidcurrpass" style="display: none;">Incorrect Password!</p>
+                </div>
+                <div>
+                    <p class="text-danger invalidnewpass" style="display: none;">New Password Doesn't Match!!</p>
+                </div>
+                <div>
+                        <p class="text-success success" style="display: none;">Password Changed</p>
+                    </div>
+                <button type="submit" class="btn btn-warning btn-xs ml-1">Submit</button>
+                
+        </form>
+    </div>
+    <script>
+
+        const form = document.querySelector('form');
+        const low = require('lowdb');
+        const FileSync = require('lowdb/adapters/FileSync');
+        const adapter = new FileSync('password.json');
+        const db = low(adapter);
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+        const invalidcurrpass = document.querySelector('.invalidcurrpass');
+        const invalidnewpass = document.querySelector('.invalidnewpass');
+        const success = document.querySelector('.success');
+        
+        form.addEventListener('submit', (e) =>{
+            e.preventDefault();
+        if(form.currpass.value!=db.get('password.newpass').value()){
+            invalidcurrpass.style.display= "";
+        }
+        if(form.newpass.value!=form.newpassAgain.value){
+            invalidnewpass.style.display= "";
+        }
+
+        if(form.currpass.value==db.get('password.newpass').value()&&form.newpass.value==form.newpassAgain.value){
+            invalidcurrpass.style.display= "none";
+            invalidnewpass.style.display= "none";
+            success.style.display="";
+            setTimeout(() => {
+                
+            }, 3000); 
+            db.set('password.newpass',`${form.newpass.value}`).write()
+            ipcRenderer.send('password:changed');
+         }
+        })
+    </script>
+</body>
+</html>

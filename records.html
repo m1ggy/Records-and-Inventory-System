@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+
+</head>
+<body> 
+    <div class="wrapper">
+    <nav class="navbar navbar-primary bg-light navbar-expand-lg">
+        <a href="home.html" class="navbar-brand">Record and Inventory System</a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a href="records.html" class="nav-link">Records</a>
+            </li>
+            <li class="nav-item">
+                <a href="inventory.html" class="nav-link">Inventory</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="buttons my-3 text-center">
+        <button type="button" class="btn btn-success" id="addrecord">Enter new record</button>
+        <button type="button" class="btn btn-warning" id="archiverecord">Archive record</button>
+        <a type="button" class="btn btn-primary" id="viewrecord" href="./view_archive_record.html">View archived records</a>
+    </div>
+    <table class="table">
+        <thead class="thead-dark">
+            <th scope="col">#</th>
+            <th scope="col">Name of Employee</th>
+            <th scope="col">Type of Service</th>
+            <th scope="col">Price</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+        </thead>
+        <tbody class="newInput">
+                
+        </tbody>
+    </table>
+    <h3 style="display: none;" id="sadFace" class="text-center">no records :(</h3>
+</div>
+<script>
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+    const table = document.querySelector('.newInput');
+    const addbutton = document.querySelector('#addrecord');
+    const archivebutton = document.querySelector('#archiverecord');
+    const low = require('lowdb');
+    const FileSync = require('lowdb/adapters/FileSync');
+    const adapter = new FileSync('db.json');
+    const db = low(adapter);
+    const today = new Date();
+    const noRecord = document.querySelector('#sadFace');
+    
+        if(db.has('user[0].count').value()==false){
+            noRecord.style.display = "";
+         }
+   
+    
+
+         db.defaults({user:[]}).write(); 
+        ///displaying data from database
+        let number = db.get('user').size().value(); //getting the size of database
+        console.log(number);
+        let i = 0;
+        //if database is not empty, display all
+        if(number>i){
+            while(number>i){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        const td1 = document.createElement('td');
+        const td2 = document.createElement('td');
+        const td3 = document.createElement('td');
+        const td4 = document.createElement('td');
+        const th = document.createElement('th');        
+
+        let count = document.createTextNode(db.get(`user[${i}].count`).value());
+        let userName = document.createTextNode(db.get(`user[${i}].employeeName`).value());
+        let serviceType = document.createTextNode(db.get(`user[${i}].typeOfService`).value());
+        let price = document.createTextNode(db.get(`user[${i}].price`).value());
+        let date = document.createTextNode(db.get(`user[${i}].dateofTransc`).value());      
+        let time = document.createTextNode(db.get(`user[${i}].timeofTransc`).value());
+
+           th.appendChild(count);
+           tr.appendChild(th);      
+           td.appendChild(userName);
+           tr.appendChild(td);       
+           td1.appendChild(serviceType);
+           tr.appendChild(td1);
+           td2.appendChild(price);
+           tr.appendChild(td2);
+           td3.appendChild(date);
+           tr.appendChild(td3);
+           td4.appendChild(time);
+           tr.appendChild(td4);
+           table.appendChild(tr);
+                i++;
+            }
+        }
+       
+
+    addbutton.addEventListener('click', e=>{
+        console.log('im inside the eventlistener');
+        e.preventDefault();
+        ipcRenderer.send('open:addrecords');
+    })
+
+    archivebutton.addEventListener('click', e=>{
+        ipcRenderer.send('open:archiverecords');
+    })
+    
+   
+    
+    ipcRenderer.on('records:add',(e, employee, service, payment, counter, dateOfToday,timeOfToday)=>{
+        noRecord.style.display = "none";
+
+        console.log("on my way back");
+        
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        const td1 = document.createElement('td');
+        const td2 = document.createElement('td');
+        const td4 = document.createElement('td');
+        const td3 = document.createElement('td');
+        const th = document.createElement('th');
+        db.get('user').push({count:counter, employeeName:employee,typeOfService:service,price:payment,dateofTransc:dateOfToday,timeofTransc:timeOfToday}).write();
+        console.log(number);
+        let count = document.createTextNode(counter);
+        let userName = document.createTextNode(employee);
+        let serviceType = document.createTextNode(service);
+        let price = document.createTextNode(payment);
+        var dateToday = document.createTextNode(dateOfToday);
+        var timeToday = document.createTextNode(timeOfToday);
+           th.appendChild(count);
+           tr.appendChild(th);      
+           td.appendChild(userName);
+           tr.appendChild(td);       
+           td1.appendChild(serviceType);
+           tr.appendChild(td1);
+           td2.appendChild(price);
+           tr.appendChild(td2);
+           td3.appendChild(dateToday);
+           tr.appendChild(td3);
+           td4.appendChild(timeToday);
+           tr.appendChild(td4);
+           table.appendChild(tr);
+        
+        
+    })
+
+    ipcRenderer.on('archive:test',(tempDb)=>{
+            console.log(tempDb);
+    })
+</script>
+</body>
+</html>

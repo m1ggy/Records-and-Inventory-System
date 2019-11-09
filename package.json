@@ -1,0 +1,18 @@
+{
+  "name": "recordandinventorysystem",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^7.0.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "lowdb": "^1.0.0"
+  }
+}

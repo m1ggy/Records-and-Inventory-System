@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+<div class="wrapper">
+        <nav class="navbar navbar-primary bg-light navbar-expand-lg">
+            <a href="#" class="navbar-brand">Record and Inventory System</a>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href="change_pass.html" class="nav-link">Account Settings</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="jumbotron bg-light text-center">
+            <h1 class="display-6">Welcome! What would you like to do?</h1>    
+                <a href="records.html" class="btn btn-primary btn-lg " role="button">Records</a>
+                <a href="inventory.html" class="btn btn-primary btn-lg" role="button">Inventory</a> 
+        </div>
+        <div class="jumbotron">
+            <h1>Current Records</h1>
+        </div>
+                <table class="table">
+                        <thead class="thead-dark">
+                            <th scope="col">#</th>
+                            <th scope="col">Name of Employee</th>
+                            <th scope="col">Type of Service</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                        </thead>
+                        <tbody class="newInput">
+                
+                        </tbody>
+                    </table>
+                    <h3 style="display: none;" id="sadFace" class="text-center">no records :(</h3>
+        <div class="jumbotron">
+            <h1>Current Inventory</h1>
+        </div>
+        <table class="table">
+                <thead class="thead-dark">
+                    <th scope="col">#</th>
+                    <th scope="col">Item Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Latest Update: Date</th>
+                    <th scope="col">Latest Update: Time</th>
+                </thead>
+                <tbody class="newInput1">
+        
+                </tbody>
+            </table>
+
+            
+       
+        
+    </div>
+    <script>
+        const low = require('lowdb');
+        const FileSync = require('lowdb/adapters/FileSync');
+        const adapter = new FileSync('db.json');
+        const db = low(adapter);
+        const adapterInventory = new FileSync('db1.json');
+        const db1 = low(adapterInventory);
+        const table = document.querySelector('.newInput');
+        const tableInventory = document.querySelector('.newInput1');
+        let number = db.get('user').size().value(); //getting the size of database
+        let i = 0;
+        //if database is not empty, display all
+
+        if(db.has('user[0].count').value()==false){
+            noRecord.style.display = "";
+         }
+
+        if(number>i){
+            noRecord.style.display = "none";
+            while(number>i){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        const td1 = document.createElement('td');
+        const td2 = document.createElement('td');
+        const td3 = document.createElement('td');
+        const td4 = document.createElement('td');
+        const th = document.createElement('th');        
+
+        let count = document.createTextNode(db.get(`user[${i}].count`).value());
+        let userName = document.createTextNode(db.get(`user[${i}].employeeName`).value());
+        let serviceType = document.createTextNode(db.get(`user[${i}].typeOfService`).value());
+        let price = document.createTextNode(db.get(`user[${i}].price`).value());
+        let date = document.createTextNode(db.get(`user[${i}].dateofTransc`).value());      
+        let time = document.createTextNode(db.get(`user[${i}].timeofTransc`).value());
+
+           th.appendChild(count);
+           tr.appendChild(th);      
+           td.appendChild(userName);
+           tr.appendChild(td);       
+           td1.appendChild(serviceType);
+           tr.appendChild(td1);
+           td2.appendChild(price);
+           tr.appendChild(td2);
+           td3.appendChild(date);
+           tr.appendChild(td3);
+           td4.appendChild(time);
+           tr.appendChild(td4);
+           table.appendChild(tr);
+                i++;
+            }
+        }
+
+        let number1 = db1.get('Item').size().value(); //getting the size of database
+        console.log(number1);
+        let i1 = 0;
+        //if database is not empty, display all
+        if(number1>i1){
+            while(number1>i1){
+        const tr1 = document.createElement('tr');
+        const td5 = document.createElement('td');
+        const td6 = document.createElement('td');
+        const td7 = document.createElement('td');
+        const td8 = document.createElement('td');
+        const td9 = document.createElement('td');
+        const th1 = document.createElement('th');        
+
+        let count1 = document.createTextNode(db1.get(`Item[${i1}].Count`).value());
+        let itemName = document.createTextNode(db1.get(`Item[${i1}].ItemName`).value());
+        let quantityItem = document.createTextNode(db1.get(`Item[${i1}].Quantity`).value());
+        let price1 = document.createTextNode(db1.get(`Item[${i1}].Price`).value());
+        let date1 = document.createTextNode(db1.get(`Item[${i1}].latestDate`).value());      
+        let time1 = document.createTextNode(db1.get(`Item[${i1}].latestTime`).value());
+
+           th1.appendChild(count1);
+           tr1.appendChild(th1);      
+           td5.appendChild(itemName);
+           tr1.appendChild(td5);       
+           td6.appendChild(quantityItem);
+           tr1.appendChild(td6);
+           td7.appendChild(price1);
+           tr1.appendChild(td7);
+           td8.appendChild(date1);
+           tr1.appendChild(td8);
+           td9.appendChild(time1);
+           tr1.appendChild(td9);
+           tableInventory.appendChild(tr1);
+                i1++;
+            }
+        }
+
+
+    </script>
+</body>
+</html>

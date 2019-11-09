@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+        <div class="wrapper">
+                <nav class="navbar navbar-primary bg-light navbar-expand-lg">
+                    <a href="home.html" class="navbar-brand">Record and Inventory System</a>
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="records.html" class="nav-link">Records</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="inventory.html" class="nav-link">Inventory</a>
+                        </li>
+                    </ul>
+                </nav>
+                <div class="buttons my-3 text-center">
+                    <button type="button" class="btn btn-success" id="updateinventory">Update Inventory</button>
+                </div>
+                <table class="table">
+                    <thead class="thead-dark">
+                        <th scope="col">#</th>
+                        <th scope="col">Item Name</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Latest Update: Date</th>
+                        <th scope="col">Latest Update: Time</th>
+                    </thead>
+                    <tbody class="newInput">
+            
+                    </tbody>
+                </table>
+                
+            </div>
+    <script>
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+    const table = document.querySelector('.newInput');
+    const addbutton = document.querySelector('#updateinventory');
+    
+    const low = require('lowdb');
+    const FileSync = require('lowdb/adapters/FileSync');
+    const adapter = new FileSync('db1.json');
+    const db = low(adapter);
+    const today = new Date();
+    db.defaults({Item:[]}).write();
+    
+    //dateOfToday.toString();
+    
+
+    
+        ///displaying data from database
+        let number = db.get('Item').size().value(); //getting the size of database
+        console.log(number);
+        let i = 0;
+        //if database is not empty, display all
+        if(number>i){
+            while(number>i){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        const td1 = document.createElement('td');
+        const td2 = document.createElement('td');
+        const td3 = document.createElement('td');
+        const td4 = document.createElement('td');
+        const th = document.createElement('th');        
+
+        let count = document.createTextNode(db.get(`Item[${i}].Count`).value());
+        let itemName = document.createTextNode(db.get(`Item[${i}].ItemName`).value());
+        let quantityItem = document.createTextNode(db.get(`Item[${i}].Quantity`).value());
+        let price = document.createTextNode(db.get(`Item[${i}].Price`).value());
+        let date = document.createTextNode(db.get(`Item[${i}].latestDate`).value());      
+        let time = document.createTextNode(db.get(`Item[${i}].latestTime`).value());
+
+           th.appendChild(count);
+           tr.appendChild(th);      
+           td.appendChild(itemName);
+           tr.appendChild(td);       
+           td1.appendChild(quantityItem);
+           tr.appendChild(td1);
+           td2.appendChild(price);
+           tr.appendChild(td2);
+           td3.appendChild(date);
+           tr.appendChild(td3);
+           td4.appendChild(time);
+           tr.appendChild(td4);
+           table.appendChild(tr);
+                i++;
+            }
+        }
+       
+
+    addbutton.addEventListener('click', e=>{
+        console.log('im inside the eventlistener');
+        e.preventDefault();
+        ipcRenderer.send('open:addinventory');
+    })
+    
+   
+    
+    ipcRenderer.on('inventory:add',(e,item, quantity, payment, dateOfToday,timeOfToday,inventoryCounter)=>{
+
+        console.log("on my way back");
+        
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        const td1 = document.createElement('td');
+        const td2 = document.createElement('td');
+        const td4 = document.createElement('td');
+        const td3 = document.createElement('td');
+        const th = document.createElement('th');
+
+        db.get('Item').push({
+            Count:inventoryCounter, 
+            ItemName:item,
+            Quantity:quantity,
+            Price:payment,
+            latestDate:dateOfToday,
+            latestTime:timeOfToday
+        }).write();
+        
+        let count = document.createTextNode(inventoryCounter);
+        let itemName = document.createTextNode(item);
+        let quantityItem = document.createTextNode(quantity);
+        let price = document.createTextNode(payment);
+        var dateToday = document.createTextNode(dateOfToday);
+        var timeToday = document.createTextNode(timeOfToday);
+           th.appendChild(count);
+           tr.appendChild(th);      
+           td.appendChild(itemName);
+           tr.appendChild(td);       
+           td1.appendChild(quantityItem);
+           tr.appendChild(td1);
+           td2.appendChild(price);
+           tr.appendChild(td2);
+           td3.appendChild(dateToday);
+           tr.appendChild(td3);
+           td4.appendChild(timeToday);
+           tr.appendChild(td4);
+           table.appendChild(tr);
+        
+        
+    })
+    </script>
+</body>
+</html>

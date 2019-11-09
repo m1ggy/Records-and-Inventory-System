@@ -1,0 +1,44 @@
+{
+  "user": [
+    {
+      "count": 1,
+      "employeeName": "Armand",
+      "typeOfService": "Scraping Dandruff",
+      "price": "50",
+      "dateofTransc": "2019-11-9",
+      "timeofTransc": "11:35:49"
+    },
+    {
+      "count": 2,
+      "employeeName": "Miguel",
+      "typeOfService": "Coding",
+      "price": "999999999999",
+      "dateofTransc": "2019-11-9",
+      "timeofTransc": "11:36:2"
+    },
+    {
+      "count": 1,
+      "employeeName": "q",
+      "typeOfService": "q",
+      "price": "1",
+      "dateofTransc": "2019-11-9",
+      "timeofTransc": "17:59:29"
+    },
+    {
+      "count": 1,
+      "employeeName": "q",
+      "typeOfService": "q",
+      "price": "1",
+      "dateofTransc": "2019-11-9",
+      "timeofTransc": "18:17:59"
+    },
+    {
+      "count": 2,
+      "employeeName": "w",
+      "typeOfService": "w",
+      "price": "2",
+      "dateofTransc": "2019-11-9",
+      "timeofTransc": "18:18:2"
+    }
+  ]
+}

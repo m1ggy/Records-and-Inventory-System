@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body style="width: 500px;margin: auto;">
+    
+<div class="jumbotron">
+    <h1 class="text-center">Archive current records?</h1>
+    <div class="buttons text-center">
+        <button class="btn btn-success" id="archiverecord">
+            Yes
+        </button>
+        <button class="btn btn-danger" id="goback">
+            no
+        </button>
+    </div>
+</div>
+    <script>
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+    const low = require('lowdb');
+    const FileSync = require('lowdb/adapters/FileSync');
+    const adapter = new FileSync('db.json');
+    const db = low(adapter);
+    const adapterArchive = new FileSync('Archive.json');
+    const dbArchive = low(adapterArchive);
+    const archive = document.querySelector('#archiverecord');
+    const goback = document.querySelector('#goback');
+    dbArchive.defaults({user:[]}).write()
+    let dbLength = db.get('user').size().value();
+    console.log(dbLength);
+        archive.addEventListener('click', e=>{
+            e.preventDefault();
+            console.log('Sent');
+            let i =0;
+                    if(i<dbLength){
+                        while(i<dbLength){
+                            let count = db.get(`user[${i}].count`).value();
+                            let userName = db.get(`user[${i}].employeeName`).value();
+                            let serviceType = db.get(`user[${i}].typeOfService`).value();
+                            let payment = db.get(`user[${i}].price`).value();
+                            let date = db.get(`user[${i}].dateofTransc`).value();      
+                            let time = db.get(`user[${i}].timeofTransc`).value();
+                            dbArchive.get('user').push({count:count, employeeName:userName,typeOfService:serviceType,price:payment,dateofTransc:date,timeofTransc:time}).write();
+                            i++;
+                        }
+                    };
+    
+
+    db.get('user').remove()
+    .write();
+            ipcRenderer.send('archive:records');
+        })
+
+        goback.addEventListener('click', ()=>{
+            ipcRenderer.send('archive:goback');
+        })
+
+    </script>
+</body>
+
+</html>

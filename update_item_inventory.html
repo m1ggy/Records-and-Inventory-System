@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+<div class="jumbotron content-center" id="updateInitial">
+    <h1 class="text-center">Enter Item ID</h1>
+    <form>
+        <input type="text" class="form-control m-auto" name="itemidInput">
+        <div class="buttons my-3 text-center"><button class="btn btn-success" id="submit">Submit</button>
+            <p class="text-danger" id="notExisting"style="display: none;margin: 10px auto;">Item does not exist!</p>
+            <p class="text-success" id="existing"style="display: none;margin: 10px auto;">Item exist! proceeding . .</p>
+        </div>
+       
+    </form>
+    
+</div>
+
+<div class="jumbotron" id="updateProceed"  style="display: none;">
+        <h1>Update Item</h1>
+        <form id="formProceed">
+            <div id="currentItem">
+                    <table class="table">
+                            <thead class="thead-dark">
+                                <th scope="col">#</th>
+                                <th scope="col">Item ID</th>
+                                <th scope="col">Item Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Latest Update: Date</th>
+                                <th scope="col">Latest Update: Time</th>
+                            </thead>
+                            <tbody class="newInput">
+                    
+                            </tbody>
+                        </table>
+                        
+            </div>
+            <div class="container bg-dark pt-3 pb-3" style="width: 300px;">
+            <div class="form-group text-center"><p class="text-light">New Quantity</p>
+                <input type="number" name="newQuantity" id="newQuantity" min="1" step="1"></div>
+                <div class="form-group text-center"><p class="text-light">New Price</p>
+                    <input type="number" id="newPrice" min="1" step="1"></div>
+                    <div class="form-group text-center"><p class="text-light">New Name</p>
+                        <input type="text" id="newName"></div>
+                        <div class="buttons text-center"><button class="btn btn-success" id="newSubmit">Submit</button></div>
+                        <p class="text-warning text-center mt-2" style="display: none;" id="emptyWarning">empty fields are not updated.</p>
+                        <p class="text-success text-center mt-2" style="display: none;" id="itemSuccess">item updated!</p>
+                    </div>
+        </form>
+        
+    </div>
+
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+        const low = require('lowdb');
+        const FileSync = require('lowdb/adapters/FileSync');
+        const adapter = new FileSync('db1.json');
+        const db = low(adapter)
+        const form = document.querySelector('form');
+        const errorMsg = document.querySelector('#notExisting');
+        const successMsg = document.querySelector('#existing');
+        const initialUpdate = document.querySelector('#updateInitial');
+        const proceed = document.querySelector('#updateProceed');
+        const formProceed = document.querySelector('#formProceed');
+        const table = document.querySelector('table');
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        const td1 = document.createElement('td');
+        const td2 = document.createElement('td');
+        const td3 = document.createElement('td');
+        const td4 = document.createElement('td');
+        const td5 = document.createElement('td');
+        const th = document.createElement('th');
+        const newQuantity = document.querySelector('#newQuantity');
+        const warning = document.querySelector('#emptyWarning');
+        const itemSuccess = document.querySelector('#itemSuccess');
+        let today = new Date();
+
+        form.addEventListener('submit',e=>{
+            e.preventDefault();
+            let tempId = db.get('Item').find({itemid:`${form.itemidInput.value}`}).value();
+           console.log(tempId.Count);
+            if(tempId==undefined){
+                errorMsg.style.display = "";
+                
+            }
+            else{
+                errorMsg.style.display = "none";
+                successMsg.style.display = "";
+                setTimeout(()=>{
+                    initialUpdate.style.display="none";
+                    updateProceed.style.display="";  
+            createRow(tempId);
+            },1500)
+        }
+    })
+
+        
+        
+formProceed.addEventListener('submit',(e)=>{
+    e.preventDefault();
+    if(formProceed.newQuantity.value.length==0){
+        warning.style.display="";
+    }
+    else{
+    db.get('Item').find({itemid:`${form.itemidInput.value}`})
+    .assign({Quantity:`${formProceed.newQuantity.value}`})
+    .write() 
+    itemSuccess.style.display="";
+    }
+    if(formProceed.newName.value.length==0){
+        warning.style.display="";
+    }
+    else{
+    db.get('Item').find({itemid:`${form.itemidInput.value}`})
+    .assign({ItemName:`${formProceed.newName.value}`})
+    .write()
+    itemSuccess.style.display=""; 
+    }
+    if(formProceed.newPrice.value.length==0){
+        warning.style.display="";
+    }
+    else{
+    db.get('Item').find({itemid:`${form.itemidInput.value}`})
+    .assign({Price:`${formProceed.newPrice.value}`})
+    .write() 
+    itemSuccess.style.display="";
+    }
+    var dateOfToday = `${today.getFullYear()}-${(today.getMonth()+1)}-${today.getDate()}`;
+    var timeOfToday = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+    db.get('Item').find({itemid:`${form.itemidInput.value}`})
+    .assign({latestDate:`${dateOfToday}`})
+    .write()
+    db.get('Item').find({itemid:`${form.itemidInput.value}`})
+    .assign({latestTime:`${timeOfToday}`})
+    .write()
+    setTimeout(()=>{
+        ipcRenderer.send('update:success');
+    },1500);  
+    
+        
+})
+          
+function createRow(tempId){
+    let itemId = document.createTextNode(tempId.itemid);
+            let count = document.createTextNode(tempId.Count);
+            let itemName = document.createTextNode(tempId.ItemName);
+            let quantity = document.createTextNode(tempId.Quantity);
+            let price = document.createTextNode(tempId.Price);
+            let date = document.createTextNode(tempId.latestDate);
+            console.log(tempId.latestDate);
+            let time = document.createTextNode(tempId.latestTime);
+
+                    th.appendChild(count);
+                    tr.appendChild(th); 
+                    td5.appendChild(itemId);
+                    tr.appendChild(td5);     
+                    td.appendChild(itemName);
+                    tr.appendChild(td);       
+                    td1.appendChild(quantity);
+                    tr.appendChild(td1);
+                    td2.appendChild(price);
+                    tr.appendChild(td2);
+                    td3.appendChild(date);
+                    tr.appendChild(td3);
+                    td4.appendChild(time);
+                    tr.appendChild(td4);
+                    table.appendChild(tr);
+}
+
+
+    </script>
+</body>
+</html>

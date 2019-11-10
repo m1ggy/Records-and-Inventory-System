@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+    <div class="jumbotron">
+        <h1>Update Item</h1>
+        <form>
+            <div id="currentItem">
+                    <table class="table">
+                            <thead class="thead-dark">
+                                <th scope="col">#</th>
+                                <th scope="col">Item ID</th>
+                                <th scope="col">Item Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Latest Update: Date</th>
+                                <th scope="col">Latest Update: Time</th>
+                            </thead>
+                            <tbody class="newInput">
+                    
+                            </tbody>
+                        </table>
+            </div>
+            <p>New Quantity</p>
+            <input type="number" name="newQuantity" id="newQuantity" min="1" max="" step="1">
+        </form>
+    </div>
+    <script>
+        const electron = require('electron');
+        const {ipcRenderer} = electron;
+        const low = require('lowdb');
+        const FileSync = require('lowdb/adapters/FileSync');
+        const adapter = new FileSync('db1.json');
+        const db = low(adapter)
+        const form = document.querySelector('form');
+
+        ipcRenderer.on('send:ItemId',(searchItemId)=>{
+            console.log('data received');
+            const tr = document.createElement('tr');
+            const td = document.createElement('td');
+            const td1 = document.createElement('td');
+            const td2 = document.createElement('td');
+            const td3 = document.createElement('td');
+            const td4 = document.createElement('td');
+            const td5 = document.createElement('td');
+            const th = document.createElement('th');
+
+            let itemId = document.createTextNode(searchItemId.itemid);
+            let count = document.createTextNode(searchItemId.Count);
+            let itemName = document.createTextNode(searchItemId.ItemName);
+            let quantity = document.createTextNode(searchItemId.Quantity);
+            let price = document.createTextNode(searchItemId.Price);
+            let date = document.createTextNode(searchItemId.lastestDate);
+            let time = document.createTextNode(searchItemId.lastestTime);
+
+           th.appendChild(count);
+           tr.appendChild(th); 
+           td5.appendChild(itemId);
+           tr.appendChild(td5);     
+           td.appendChild(itemName);
+           tr.appendChild(td);       
+           td1.appendChild(quantity);
+           tr.appendChild(td1);
+           td2.appendChild(price);
+           tr.appendChild(td2);
+           td3.appendChild(date);
+           tr.appendChild(td3);
+           td4.appendChild(time);
+           tr.appendChild(td4);
+           table.appendChild(tr);
+        })
+    </script>
+</body>
+</html>

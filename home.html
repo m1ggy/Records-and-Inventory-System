@@ -44,6 +44,7 @@
         <table class="table">
                 <thead class="thead-dark">
                     <th scope="col">#</th>
+                    <th scope="col">Item ID</th>
                     <th scope="col">Item Name</th>
                     <th scope="col">Quantity</th>
                     <th scope="col">Price</th>
@@ -51,10 +52,10 @@
                     <th scope="col">Latest Update: Time</th>
                 </thead>
                 <tbody class="newInput1">
-        
+                    
                 </tbody>
             </table>
-
+            <h3 style="display: none;" id="sadFaceInventory" class="text-center">empty inventory :(</h3>
             
        
         
@@ -70,6 +71,8 @@
         const tableInventory = document.querySelector('.newInput1');
         let number = db.get('user').size().value(); //getting the size of database
         let i = 0;
+        const noRecord = document.querySelector('#sadFace');
+        const noInventory = document.querySelector('#sadFaceInventory');
         //if database is not empty, display all
 
         if(db.has('user[0].count').value()==false){
@@ -110,12 +113,16 @@
                 i++;
             }
         }
-
+        
         let number1 = db1.get('Item').size().value(); //getting the size of database
         console.log(number1);
         let i1 = 0;
+        if(db1.has('Item[0].Count').value()==false){
+            noInventory.style.display = "";
+         }
         //if database is not empty, display all
         if(number1>i1){
+            noInventory.style.display = "none";
             while(number1>i1){
         const tr1 = document.createElement('tr');
         const td5 = document.createElement('td');
@@ -123,9 +130,11 @@
         const td7 = document.createElement('td');
         const td8 = document.createElement('td');
         const td9 = document.createElement('td');
+        const td10 = document.createElement('td');
         const th1 = document.createElement('th');        
 
         let count1 = document.createTextNode(db1.get(`Item[${i1}].Count`).value());
+        let itemID = document.createTextNode(db1.get(`Item[${i1}].itemid`).value());
         let itemName = document.createTextNode(db1.get(`Item[${i1}].ItemName`).value());
         let quantityItem = document.createTextNode(db1.get(`Item[${i1}].Quantity`).value());
         let price1 = document.createTextNode(db1.get(`Item[${i1}].Price`).value());
@@ -133,7 +142,9 @@
         let time1 = document.createTextNode(db1.get(`Item[${i1}].latestTime`).value());
 
            th1.appendChild(count1);
-           tr1.appendChild(th1);      
+           tr1.appendChild(th1); 
+        td10.appendChild(itemID);  
+        tr1.appendChild(td10);  
            td5.appendChild(itemName);
            tr1.appendChild(td5);       
            td6.appendChild(quantityItem);

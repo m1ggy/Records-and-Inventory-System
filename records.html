@@ -36,6 +36,10 @@
         </tbody>
     </table>
     <h3 style="display: none;" id="sadFace" class="text-center">no records :(</h3>
+    <div class="jumbotron" style="margin:auto;width: 300px;height: 200px;display: none; background-color: white;" id="emptyRecordArchive">
+        <h5 class="text-danger text-center">ALERT!</h5>
+        <h4 class="text-danger text-center">Empty records!</h4>
+    </div>
 </div>
 <script>
     const electron = require('electron');
@@ -49,6 +53,9 @@
     const db = low(adapter);
     const today = new Date();
     const noRecord = document.querySelector('#sadFace');
+    const body = document.querySelector('body');
+    const errorEmptyRecord = document.querySelector('#emptyRecordArchive');
+    
     
         if(db.has('user[0].count').value()==false){
             noRecord.style.display = "";
@@ -104,6 +111,11 @@
     })
 
     archivebutton.addEventListener('click', e=>{
+        if(db.has('user[0].count').value()==false){
+            emptyRecordArchive.style.display ="";
+            setTimeout(()=>{emptyRecordArchive.style.display ="none";},3000);
+        }
+        else
         ipcRenderer.send('open:archiverecords');
     })
     

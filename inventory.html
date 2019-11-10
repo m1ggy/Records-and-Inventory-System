@@ -17,11 +17,13 @@
                     </ul>
                 </nav>
                 <div class="buttons my-3 text-center">
-                    <button type="button" class="btn btn-success" id="updateinventory">Update Inventory</button>
+                    <button type="button" class="btn btn-success" id="updateinventory">Add new item</button>
+                    <button class="btn btn-success" id="updateItem">Update item</button>
                 </div>
                 <table class="table">
                     <thead class="thead-dark">
                         <th scope="col">#</th>
+                        <th scope="col">Item ID</th>
                         <th scope="col">Item Name</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Price</th>
@@ -39,12 +41,12 @@
     const {ipcRenderer} = electron;
     const table = document.querySelector('.newInput');
     const addbutton = document.querySelector('#updateinventory');
-    
     const low = require('lowdb');
     const FileSync = require('lowdb/adapters/FileSync');
     const adapter = new FileSync('db1.json');
     const db = low(adapter);
     const today = new Date();
+    const updateButton = document.querySelector('#updateItem');
     db.defaults({Item:[]}).write();
     
     //dateOfToday.toString();
@@ -64,6 +66,7 @@
         const td2 = document.createElement('td');
         const td3 = document.createElement('td');
         const td4 = document.createElement('td');
+        const td5 = document.createElement('td');
         const th = document.createElement('th');        
 
         let count = document.createTextNode(db.get(`Item[${i}].Count`).value());
@@ -72,9 +75,13 @@
         let price = document.createTextNode(db.get(`Item[${i}].Price`).value());
         let date = document.createTextNode(db.get(`Item[${i}].latestDate`).value());      
         let time = document.createTextNode(db.get(`Item[${i}].latestTime`).value());
-
+        let itemId = document.createTextNode(db.get(`Item[${i}].itemid`).value());
+           
+           
            th.appendChild(count);
-           tr.appendChild(th);      
+           tr.appendChild(th); 
+           td5.appendChild(itemId);
+           tr.appendChild(td5);     
            td.appendChild(itemName);
            tr.appendChild(td);       
            td1.appendChild(quantityItem);
@@ -99,7 +106,7 @@
     
    
     
-    ipcRenderer.on('inventory:add',(e,item, quantity, payment, dateOfToday,timeOfToday,inventoryCounter)=>{
+    ipcRenderer.on('inventory:add',(e,item, quantity, payment, dateOfToday,timeOfToday,inventoryCounter,itemID)=>{
 
         console.log("on my way back");
         
@@ -109,9 +116,11 @@
         const td2 = document.createElement('td');
         const td4 = document.createElement('td');
         const td3 = document.createElement('td');
+        const td5 = document.createElement('td');
         const th = document.createElement('th');
 
         db.get('Item').push({
+            itemid:itemID,
             Count:inventoryCounter, 
             ItemName:item,
             Quantity:quantity,
@@ -119,7 +128,7 @@
             latestDate:dateOfToday,
             latestTime:timeOfToday
         }).write();
-        
+        let itemId = document.createTextNode(itemID);
         let count = document.createTextNode(inventoryCounter);
         let itemName = document.createTextNode(item);
         let quantityItem = document.createTextNode(quantity);
@@ -127,7 +136,9 @@
         var dateToday = document.createTextNode(dateOfToday);
         var timeToday = document.createTextNode(timeOfToday);
            th.appendChild(count);
-           tr.appendChild(th);      
+           tr.appendChild(th); 
+           td5.appendChild(itemId);
+           tr.appendChild(td5);     
            td.appendChild(itemName);
            tr.appendChild(td);       
            td1.appendChild(quantityItem);
@@ -141,6 +152,13 @@
            table.appendChild(tr);
         
         
+    })
+    updateButton.addEventListener('click',()=>{
+        ipcRenderer.send('update:inventory');
+    })
+    ipcRenderer.on('update:item',(searchItemId) =>{
+        console.log('received data');
+        ipcRenderer.send('update:item:proceed',searchItemId);
     })
     </script>
 </body>

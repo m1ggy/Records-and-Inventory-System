@@ -14,6 +14,7 @@
         <button class="btn btn-danger" id="goback">
             no
         </button>
+        <p class="text-success" id="successArchive" style="display: none;margin:20px auto">Records archived!</p>
     </div>
 </div>
     <script>
@@ -27,13 +28,16 @@
     const dbArchive = low(adapterArchive);
     const archive = document.querySelector('#archiverecord');
     const goback = document.querySelector('#goback');
+    const archiveSuccess = document.querySelector('#successArchive');
     dbArchive.defaults({user:[]}).write()
     let dbLength = db.get('user').size().value();
     console.log(dbLength);
         archive.addEventListener('click', e=>{
+            
             e.preventDefault();
             console.log('Sent');
             let i =0;
+            archiveSuccess.style.display ="";
                     if(i<dbLength){
                         while(i<dbLength){
                             let count = db.get(`user[${i}].count`).value();
@@ -50,7 +54,8 @@
 
     db.get('user').remove()
     .write();
-            ipcRenderer.send('archive:records');
+    
+    setTimeout(()=>{ipcRenderer.send('archive:records');},1500);
         })
 
         goback.addEventListener('click', ()=>{
